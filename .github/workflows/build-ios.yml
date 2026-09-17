@@ -25,21 +25,14 @@ jobs:
       - name: Build Assets
         run: ./gradlew pack
 
-      - name: Build iOS App
-        run: ./gradlew :ios:createIPA -Probovm.iosSkipSigning=true -Probovm.enableBitcode=false
+      - name: Build iOS App Bundle
+        run: ./gradlew :ios:device -Probovm.iosSkipSigning=true -Probovm.archs=arm64
 
-      - name: Package IPA
+      - name: Package to IPA
         run: |
           mkdir -p Payload
-          if [ -d "ios/build/robovm/IOSLauncher.app" ]; then
-            cp -r ios/build/robovm/IOSLauncher.app Payload/
-            zip -r Mindustry.ipa Payload
-          elif [ -f "ios/build/robovm/IOSLauncher.ipa" ]; then
-            cp ios/build/robovm/IOSLauncher.ipa Mindustry.ipa
-          else
-            find ios/build -name "*.app" -exec cp -r {} Payload/ \;
-            zip -r Mindustry.ipa Payload
-          fi
+          cp -r ios/build/robovm/IOSLauncher.app Payload/
+          zip -r Mindustry.ipa Payload
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
