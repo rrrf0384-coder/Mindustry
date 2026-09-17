@@ -8,10 +8,17 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Mindustry
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+          path: 'Mindustry'
+
+      - name: Checkout Arc Framework
+        uses: actions/checkout@v4
+        with:
+          repository: 'Anuken/Arc'
+          path: 'Arc'
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -20,18 +27,20 @@ jobs:
           java-version: '17'
 
       - name: Make gradlew executable
-        run: chmod +x ./gradlew
+        run: chmod +x ./Mindustry/gradlew
 
       - name: Build Assets
+        working-directory: ./Mindustry
         run: ./gradlew pack
 
-      - name: Build iOS App Bundle
+      - name: Build iOS App
+        working-directory: ./Mindustry
         run: ./gradlew :ios:robovmInstall -Probovm.iosSkipSigning=true -Pmatrix=false
 
       - name: Package to IPA
         run: |
           mkdir -p Payload
-          cp -r ios/build/robovm/IOSLauncher.app Payload/
+          cp -r Mindustry/ios/build/robovm/IOSLauncher.app Payload/
           zip -r Mindustry.ipa Payload
 
       - name: Upload IPA Artifact
