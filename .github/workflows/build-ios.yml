@@ -26,7 +26,7 @@ jobs:
         run: ./gradlew pack
 
       - name: Build iOS App Bundle
-        run: ./gradlew :ios:device -Probovm.iosSkipSigning=true -Probovm.archs=arm64
+        run: ./gradlew :ios:robovmInstall -Probovm.iosSkipSigning=true -Pmatrix=false
 
       - name: Package to IPA
         run: |
